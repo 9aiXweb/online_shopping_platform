@@ -26,12 +26,12 @@ def index():
         " ORDER BY created DESC"
     ).fetchall()
     if request.method == "POST":
-        print("postgvaw")
+    
 
         selected_posts = request.form.getlist('selected_posts')
-        flash(selected_posts)
+     
         for post_id in selected_posts:
-            flash(post_id)
+        
             # 投稿のIDから投稿を取得します
             post = db.execute(
                 "SELECT id, body FROM post WHERE id = ?", (post_id,)
@@ -39,22 +39,23 @@ def index():
             if post is not None:
 
                 # 投稿の本文に "sold out" を追加します
-                new_body = post['body'] + " sold out"
+                new_body = post['body'] + "\n << sold out >>"
                 # データベース内の投稿の本文を更新します
                 db.execute(
                     "UPDATE post SET body = ? WHERE id = ?", (new_body, post_id)
                 )
                 db.commit()
-    db = get_db()
-    posts = db.execute(
-        "SELECT p.id, title, body, created, author_id, username"
-        " FROM post p JOIN user u ON p.author_id = u.id"
-        " ORDER BY created DESC"
-    ).fetchall()
-    flash("seth")
-    return render_template("blog/index.html", posts=posts)
-    # else:
-    #     return render_template("blog/index.html", posts=posts)
+        db = get_db()
+        posts = db.execute(
+            "SELECT p.id, title, body, created, author_id, username"
+            " FROM post p JOIN user u ON p.author_id = u.id"
+            " ORDER BY created DESC"
+        ).fetchall()
+        selected_posts = []
+        
+        return render_template("blog/index.html", posts=posts)
+    else:
+        return render_template("blog/index.html", posts=posts)
 
 def get_post(id, check_author=True):
     """Get a post and its author by id.
