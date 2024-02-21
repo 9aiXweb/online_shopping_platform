@@ -1,13 +1,17 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Amazon Tabao Copy{% endblock %}</h1>
-  {% if g.user %}
+<h1>{% block title %}Amazon Tabao{% endblock title %}</h1>
+  {% if g.user.username == 'admin' %}
     <a class="action" href="{{ url_for('blog.create') }}">New</a>
   {% endif %}
 {% endblock %}
 
+
+
+
 {% block content %}
+<form method="post">
   {% for post in posts %}
     <article class="post">
       <header>
@@ -17,6 +21,7 @@
         </div>
         {% if g.user['id'] == post['author_id'] %}
           <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
+          <input type="checkbox" name="selected_posts" value="{{ post['id'] }}">
         {% endif %}
       </header>
       <p class="body">{{ post['body'] }}</p>
@@ -25,4 +30,10 @@
       <hr>
     {% endif %}
   {% endfor %}
+  <button type="submit">Purchase</button>
+
+</form>
 {% endblock %}
+
+
+
