@@ -5,12 +5,22 @@
   {% if g.user.username == 'admin' %}
     <a class="action" href="{{ url_for('blog.create') }}">New</a>
   {% endif %}
+  <form method="post" action="{{ url_for('auth.credit_card') }}">
+    <!-- 他のフォームフィールドなど -->
+    <input type="submit" value="Credit Card Registration">
+</form>
+
 {% endblock %}
 
 
 
 
 {% block content %}
+<form method="post">
+  <input type="text" name="search_word" value="">
+  <input type="submit" name="action" value="Search">
+</form>
+
 <form method="post">
   {% for post in posts %}
     <article class="post">
@@ -21,8 +31,10 @@
         </div>
         {% if g.user['id'] == post['author_id'] %}
           <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
+          {% endif %}
+
           <input type="checkbox" name="selected_posts" value="{{ post['id'] }}">
-        {% endif %}
+
       </header>
       <p class="body">{{ post['body'] }}</p>
     </article>
@@ -30,7 +42,7 @@
       <hr>
     {% endif %}
   {% endfor %}
-  <button type="submit">Purchase</button>
+  <button type="submit">購入画面に進む</button>
 
 </form>
 {% endblock %}

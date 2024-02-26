@@ -116,3 +116,61 @@ def logout():
     """Clear the current session, including the stored user id."""
     session.clear()
     return redirect(url_for("index"))
+
+@bp.route("/credit_card", methods=("GET", "POST"))
+def credit_card():
+    if request.method == "POST":
+        card_number = request.form.get('card_number')
+        expiration_date = request.form.get('expiration_date')
+        security_code = request.form.get('security_code')
+        error = None
+        db = get_db()
+        user_id = session.get("user_id")
+
+        if user_id is None:
+            g.user = None
+        else:
+            g.user = (
+                get_db().execute("SELECT * FROM user WHERE id = ?", (user_id,)).fetchone()
+            )
+        
+        if not (card_number and expiration_date and security_code):
+            error = "Credit card is required."
+            
+        if error is None:
+            try:
+                
+                db.execute(
+                    "INSERT INTO credit_card (user_id, card_number, expiration_date, security_code) VALUES (?, ?, ?, ?)",
+                    (g.user["id"], card_number, expiration_date, security_code),
+                )
+                db.commit()
+                return redirect(url_for("index"))
+            except db.IntegrityError:
+                # The username was already taken, which caused the
+                # commit to fail. Show a validation error.
+                error = f"Failed to save credit card information for user {g.user["id"]}."
+        else:
+            render_template("auth/credit_card.html")
+    return render_template("auth/credit_card.html")
+
+
+@bp.route("/payment", methods=("GET", "POST"))
+def payment():
+    if request.method == "POST":
+        return redirect(url_for("index"))
+    db = get_db()
+
+    post  = db.execute(
+        "SELECT * FROM credit_card WHERE user_id = ?", (g.user["id"],)
+    ).fetchone()
+
+    if post is not None:
+
+        # 投稿の本文に "sold out" を追加します
+        card_number = post['card_number'] 
+        expiration_date = post['expiration_date']
+        security_code = post['security_code'] 
+        
+    return render_template("auth/payment.html", card_number=card_number, expiration_date=expiration_date, security_code=security_code)
+

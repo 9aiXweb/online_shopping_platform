@@ -25,8 +25,18 @@ def index():
         " FROM post p JOIN user u ON p.author_id = u.id"
         " ORDER BY created DESC"
     ).fetchall()
-    if request.method == "POST":
     
+    # search()関数を使って、検索ワードを取得します
+    # if request.method == "POST" and request.form.get('action') == 'Search':
+    if request.method == "POST":         
+        if request.form.get('action') is not None:
+            
+            search_word = request.form['search_word']
+            if search_word is not "":
+                for post in posts:
+                    if search_word in post['title']:
+                        return render_template("auth/search.html", _title=post['title'], _body=post['body']) 
+            return redirect(url_for("index"))
 
         selected_posts = request.form.getlist('selected_posts')
      
@@ -38,13 +48,13 @@ def index():
             ).fetchone()
             if post is not None:
 
-                # 投稿の本文に "sold out" を追加します
-                new_body = post['body'] + "\n << sold out >>"
-                # データベース内の投稿の本文を更新します
-                db.execute(
-                    "UPDATE post SET body = ? WHERE id = ?", (new_body, post_id)
-                )
-                db.commit()
+                if not  "<< sold out >>" in post['body']:
+                    new_body = post['body'] + "\n << sold out >>"
+
+                    db.execute(
+                        "UPDATE post SET body = ? WHERE id = ?", (new_body, post_id)
+                    )
+                    db.commit()
         db = get_db()
         posts = db.execute(
             "SELECT p.id, title, body, created, author_id, username"
@@ -53,7 +63,7 @@ def index():
         ).fetchall()
         selected_posts = []
         
-        return render_template("blog/index.html", posts=posts)
+        return redirect(url_for("auth.payment"))
     else:
         return render_template("blog/index.html", posts=posts)
 

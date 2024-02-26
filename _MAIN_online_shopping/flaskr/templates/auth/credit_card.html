@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h2>Credit Card</h2>
+{% endblock %}
+{% block content %}
+  <form method="post">
+    <dl>
+      <dt>Card Number:</dt>
+      <dd><input type="text" name="card_number" value="{{ request.form.card_number }}"></dd>
+      <dt>Expiration Date:</dt>
+      <dd><input type="text" name="expiration_date" value="{{ request.form.expiration_date }}"></dd>
+      <dt>Security Code:</dt>
+      <dd><input type="text" name="security_code" value="{{ request.form.security_code }}"></dd>
+    </dl>
+    <input type="submit" value="Submit">
+  </form>
+{% endblock %}

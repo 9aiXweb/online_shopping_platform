@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block header %}
+<head>
+    <title>Payment Method Selection</title>
+</head>
+{% endblock %}
+
+{% block content %}
+    <h1>Payment Method Selection</h1>
+    <form action="{{ url_for('auth.payment') }}" method="POST">
+        <label for="credit_card">Credit Card</label>
+        <input  id="credit_card" name="payment_method" value="{{card_number}}">
+        <input  id="credit_card" name="payment_method" value="{{expiration_date}}">
+        <input  id="credit_card" name="payment_method" value="{{security_code}}">
+        <button type="submit">Purchase</button>
+    </form>
+{% endblock %}
+
